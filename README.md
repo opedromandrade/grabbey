@@ -7,7 +7,9 @@ The idea was to create a simple, tool, hence a script, that not only recorded th
 ## Usage
 1. Download [ffmpeg](https://ffmpeg.org/) for windows [here](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z)
 2. On the same folder you have [ffmpeg](https://ffmpeg.org/), type the following command to show all recording "devices"
+ 
  `> ffmpeg.exe -list_devices true -f dshow -i dummy`
+ 
  ![](./files/devices.PNG)
  
 3. Change the variables on the script and use it!
