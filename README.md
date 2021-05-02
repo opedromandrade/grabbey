@@ -10,4 +10,5 @@ The idea was to create a simple, tool, hence a script, that not only recorded th
 ![](./files/devices.PNG)
 
  `> ffmpeg.exe -list_devices true -f dshow -i dummy`
+ 
 3. Change the variables on the script and use it!
