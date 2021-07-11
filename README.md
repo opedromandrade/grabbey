@@ -1,15 +1,15 @@
 # grabbey
-Simple few scripts for screen recording on Windows enviroment using ffmpeg
+Simple few scripts for screen recording on Windows and (also) linux enviroments using ffmpeg alone
 
 ## The idea
 The idea was to create a simple script that not only recorded the desktop but also the webcam, on a Microsoft Windows machine. So it evolved fou a few simple scripts for different situations. So these are simple and opensource for anyone who, i.e. wants to make a tutorial. It basically just uses [ffmpeg](https://ffmpeg.org/) to call the hardware of your machine, and record the different streams. Part of the WebCamz script was inpired by this video: https://youtu.be/O4VqX_Fszx0
 
-## Modes/Scripts
+## Win Modes/Scripts
 1. WebCamz » Desktop and WebCam - Video and audio
 2. Desktopz » Desktop only
 3. Desktopaz » Desktop with audio
 
-## Usage
+## Win Usage
 1. Download [ffmpeg](https://ffmpeg.org/) for windows [here](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z)
 2. On the same folder you have [ffmpeg](https://ffmpeg.org/), type the following command to show all recording "devices"
  
@@ -29,4 +29,3 @@ The idea was to create a simple script that not only recorded the desktop but al
 To find more aaditional information on ffmpeg desktop recording, please follow: 
 1. https://trac.ffmpeg.org/wiki/Capture/Desktop
 2. https://trac.ffmpeg.org/wiki/HWAccelIntro
-3. 

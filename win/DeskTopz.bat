@@ -1,0 +1,3 @@
+@echo off
+# Change the variables accordingly
+ffmpeg -y -rtbufsize 1900M -f gdigrab -framerate 30 -i desktop -f dshow -i video="USB 2.0 Camera ":audio="@device_cm_{33D9A762-90C8-11D0-BD43-00A0C911CE86}\wave_{50951FA9-10CD-44D4-8F67-4C0471E917F3}" -filter_complex "[0:v] scale=1920x1080 [desktop]; [1:v] scale=384x216 [webcam]; [desktop][webcam] overlay=x=W-w-50:y=H-h-50" -b:v 2M -q:a 1.1 -b:a 256k -ar 44100 -threads 4 -vcodec libx264 -crf 16 -preset slow -pix_fmt yuv420p screen.mp4
