@@ -3,7 +3,7 @@
 :: 🐧 grabbey - WebCamz Subsystem
 :: Author: pedro andrade - https://github.com
 :: Updated on: 07.2026
-:: Description: Captures Windows Desktop with an overlaid Picture-In-Picture WebCam stream.
+:: Description: Captures Windows Desktop with WebCam overlay and default audio.
 :: Guidance: Press [q] inside this console terminal to halt recording safely.
 :: ==============================================================================
 
@@ -19,9 +19,9 @@ echo.
 :: ------------------------------------------------------------------------------
 :: CONFIGURABLE ENVIRONMENT VARIABLES
 :: ------------------------------------------------------------------------------
-:: Modify these names to match your device outputs exactly from '-list_devices true'
+:: Modify the webcam name to match your hardware output from '-list_devices true'
 set WEBCAM_NAME=USB 2.0 Camera
-set AUDIO_NAME=@device_cm_{33D9A762-90C8-11D0-BD43-00A0C911CE86}\wave_{50951FA9-10CD-44D4-8F67-4C0471E917F3}
+set AUDIO_DEVICE=Default Audio Device
 
 :: Resolution scaling arrays
 set DESKTOP_RES=1920x1080
@@ -39,6 +39,7 @@ echo [INFO] ⚙️ Initializing video compositing canvas layers...
 echo        - Base Desktop Resolution : %DESKTOP_RES%
 echo        - Overlay WebCam Scale    : %WEBCAM_RES%
 echo        - Capture Device Module   : %WEBCAM_NAME%
+echo        - Audio Capture Node      : %AUDIO_DEVICE%
 echo        - Destination File        : %OUTPUT_FILE%
 echo.
 echo 🔴 [RECORDING STARTED] 
@@ -49,10 +50,9 @@ echo.
 :: ------------------------------------------------------------------------------
 :: RUN FFMPEG PIP COMPOSITING ENGINE
 :: ------------------------------------------------------------------------------
-:: Windows Batch lines are broken cleanly using the circumflex accent character (^)
 ffmpeg -y -rtbufsize 1900M -thread_queue_size 1024 ^
 -f gdigrab -framerate %FRAMERATE% -i desktop ^
--f dshow -thread_queue_size 1024 -i video="%WEBCAM_NAME%":audio="%AUDIO_NAME%" ^
+-f dshow -thread_queue_size 1024 -i video="%WEBCAM_NAME%":audio="%AUDIO_DEVICE%" ^
 -filter_complex "[0:v]scale=%DESKTOP_RES%[desktop]; [1:v]scale=%WEBCAM_RES%[webcam]; [desktop][webcam]overlay=x=W-w-50:y=H-h-50" ^
 -c:v libx264 -crf %CRF_QUALITY% -preset slow -pix_fmt yuv420p -b:v %VIDEO_BITRATE% ^
 -c:a aac -b:a %AUDIO_BITRATE% -ar %SAMPLERATE% -async 1 ^
