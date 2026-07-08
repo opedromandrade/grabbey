@@ -3,7 +3,7 @@
 :: 🐧 grabbey - WebCamz Subsystem
 :: Author: pedro andrade - https://github.com
 :: Updated on: 07.2026
-:: Description: Captures Windows Desktop with WebCam overlay and default audio.
+:: Description: Hardware-accelerated Desktop with WebCam Picture-In-Picture.
 :: Guidance: Press [q] inside this console terminal to halt recording safely.
 :: ==============================================================================
 
@@ -12,14 +12,48 @@ color 0A
 cls
 
 echo ==============================================================================
-echo   📸 GRABBEY : PICTURE-IN-PICTURE WEBCAM CAPTURE ENGINE
+echo   📸 GRABBEY : AUTOMATED HARDWARE-ACCELERATED PIP WEBCAM RECORDER
 echo ==============================================================================
+echo.
+
+:: ------------------------------------------------------------------------------
+:: AUTOMATED GPU DETECTOR ENGINE
+:: ------------------------------------------------------------------------------
+echo [INFO] 🔍 Scanning system hardware profile for hardware graphics acceleration...
+set "VCODEC=libx264"
+set "PRESET=slow"
+
+:: Query Windows Management Instrumentation for GPU Name
+for /f "skip=1 delims=" %%i in ('wmic path win32_videocontroller get name') do (
+    echo %%i | findstr /i "NVIDIA" >nul && (
+        set "VCODEC=h264_nvenc"
+        set "PRESET=p4"
+        goto :GpuFoundWeb
+    )
+    echo %%i | findstr /i "AMD" >nul && (
+        set "VCODEC=h264_amf"
+        set "PRESET=speed"
+        goto :GpuFoundWeb
+    )
+    echo %%i | findstr /i "Intel" >nul && (
+        set "VCODEC=h264_qsv"
+        set "PRESET=veryfast"
+        goto :GpuFoundWeb
+    )
+)
+
+:GpuFoundWeb
+if "%VCODEC%"=="libx264" (
+    echo [WARN] 💻 No dedicated GPU acceleration detected. Standardizing on CPU (libx264).
+) else (
+    echo [SUCCESS] 🚀 Hardware Graphics Acceleration Detected: Using %VCODEC% codec engine!
+)
 echo.
 
 :: ------------------------------------------------------------------------------
 :: CONFIGURABLE ENVIRONMENT VARIABLES
 :: ------------------------------------------------------------------------------
-:: Modify the webcam name to match your hardware output from '-list_devices true'
+:: Change the camera name here if your hardware tracker uses a custom identifier
 set WEBCAM_NAME=USB 2.0 Camera
 set AUDIO_DEVICE=Default Audio Device
 
@@ -29,8 +63,7 @@ set WEBCAM_RES=384x216
 
 :: Video metrics settings
 set FRAMERATE=30
-set CRF_QUALITY=22
-set VIDEO_BITRATE=2M
+set VIDEO_BITRATE=4M
 set AUDIO_BITRATE=256k
 set SAMPLERATE=44100
 set OUTPUT_FILE=webcam_overlay_capture.mp4
@@ -54,7 +87,7 @@ ffmpeg -y -rtbufsize 1900M -thread_queue_size 1024 ^
 -f gdigrab -framerate %FRAMERATE% -i desktop ^
 -f dshow -thread_queue_size 1024 -i video="%WEBCAM_NAME%":audio="%AUDIO_DEVICE%" ^
 -filter_complex "[0:v]scale=%DESKTOP_RES%[desktop]; [1:v]scale=%WEBCAM_RES%[webcam]; [desktop][webcam]overlay=x=W-w-50:y=H-h-50" ^
--c:v libx264 -crf %CRF_QUALITY% -preset slow -pix_fmt yuv420p -b:v %VIDEO_BITRATE% ^
+-c:v %VCODEC% -preset %PRESET% -pix_fmt yuv420p -b:v %VIDEO_BITRATE% ^
 -c:a aac -b:a %AUDIO_BITRATE% -ar %SAMPLERATE% -async 1 ^
 -threads 4 "%OUTPUT_FILE%"
 
